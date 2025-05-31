@@ -1,0 +1,115 @@
+{% extends 'admin_dashboard.html'%}
+{% load custom_tags %}
+
+{% block content %}
+<h1>{{title}}</h1><button id="add-new-btn">Add New</button>	
+	<ul>		
+		{{ headings|json_script:"headings" }}
+	</ul>
+
+	<div>
+		{{ check }}
+	</div>
+	<table>
+		<thead>			
+			<tr>
+				<th>ID</th>
+				{% for heading in headings %} 
+					<th>{{ heading }}</th>
+				{% endfor %}
+			</tr>
+		</thead>
+		<tbody>
+			{% for obj in objects %}
+				<tr data-id="{{ obj.id }}">
+					<td>{{ obj.id }}</td>
+					{% for key in headings %}
+						<td>{{ obj|get_value:key }}</td>
+					{% endfor %}
+					<td><button class="edit-row-btn">Edit</button></td>
+					<td><button class="delete-row-btn">Delete</button></td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<div>
+		<div>
+			<form method="POST" enctype="multipart/form-data">
+				{{form}}
+				{% csrf_token %}
+				<input id="obj-form-submit" type="submit" value="Add New">			
+			</form>
+		</div>
+	</div>
+{% endblock content %}
+
+
+{% block script %}
+	const headings = JSON.parse(document.getElementById('headings').textContent);
+	
+	window.onload = () => {
+		console.log("Window loaded");
+
+		const add_new_btn = document.getElementById('add-new-btn');
+		add_new_btn.onclick = (ev) => {
+			ev.preventDefault();
+			console.log(headings)
+		};
+
+
+
+		document.querySelectorAll('.edit-row-btn').forEach((b) => {
+			b.onclick = (ev) => {
+				window.scroll(0, window.scrollMaxY);
+				const table_row = ev.target.parentElement.parentElement
+				const id = table_row.getAttribute('data-id')
+
+				for( const [index, hd] of headings.entries() ) {
+					const inputElement = document.querySelector(`#id_${hd}`);
+					if( inputElement.type === 'select-one' ) {
+						const selectedCode = table_row.children[ index + 1 ].innerHTML
+						const selectedOption = Array.from(
+							document.querySelector(`#id_${hd}`).children
+						).filter((item) => {
+							console.log(selectedCode === item.innerHTML)
+							return item.innerHTML === selectedCode
+						})[0]
+
+						selectedOption.setAttribute("selected", true);
+					} else {
+						document.querySelector(`#id_${hd}`).value = table_row.children[index + 1].innerText
+					}
+				}
+
+				document.querySelector('#obj-form-submit').value = "Update";
+
+				// const idInput = document.createElement('input')
+				// idInput.type = 'number';
+				// idInput.name = 'obj_id'
+				// idInput.value = id;
+				// idInput.setAttribute('disabled', true)
+				document.querySelector('#obj-form-submit').parentElement.onsubmit = (ev) => {
+					ev.preventDefault()
+					const data = new FormData(ev.target)
+					console.log(data)
+					data.append('obj_id', id)
+
+					fetch(window.location.href, { method: 'POST', body: data})
+				}
+
+
+			}
+		});
+
+
+		document.querySelectorAll('.delete-row-btn').forEach((b) => {
+			b.onclick = (ev) => {
+				console.log('Deleting...', ev.target.parentElement.parentElement.getAttribute('data-id'))
+			}
+		});
+
+
+	};
+
+
+{% endblock %}

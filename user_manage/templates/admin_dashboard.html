@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Sonchi-Admin</title>
+</head>
+<style type="text/css">
+	{% block style %}
+	{% endblock style %}
+</style>
+<body>
+
+	<header>
+		<img src="" alt="sonchi-logo" />
+		<img src="" alt="profile-image" />
+	</header>
+	<nav>
+		<ul>
+			<li><a href="{% url 'user_manage:admin-users' %}">Users</a></li>
+			<li><a href="{% url 'user_manage:admin-guests' %}">Guests</a></li>
+			<li><a href="{% url 'user_manage:admin-hosts' %}">Hosts</a></li>
+			<li><a href="{% url 'user_manage:admin-listings' %}">Listings</a></li>
+			<li><a href="{% url 'user_manage:admin-questions' %}">Questions</a></li>
+			<li><a href="{% url 'user_manage:admin-answers' %}">Answers</a></li>
+			<li><a href="{% url 'user_manage:host-profiles' %}">HostProfiles</a></li>
+			<li><a href="{% url 'user_manage:guest-profiles' %}">GuestProfiles</a></li>
+
+		</ul>
+	</nav>
+
+	<section>
+		{% block content %}
+
+		<h3>This is admin home page</h3>
+		{% endblock content %}
+	</section>
+
+</body>
+<script>
+	{% block script %} 
+	{% endblock script %}
+</script>
+</html>
